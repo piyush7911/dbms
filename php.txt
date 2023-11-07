@@ -1,0 +1,181 @@
+php connectivity
+
+QUERY FOR TABLE EMPLOYEE
+CREATE TABLE Employee (
+Employee_id INT AUTO_INCREMENT PRIMARY KEY,
+Employee_Name VARCHAR(255) NOT NULL,
+Employee_Salary DECIMAL(10, 2) NOT NULL,
+Employee_Manager INT)
+
+EMPLOYEE_FORM_PAGE
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Management</title>
+</head>
+<body>
+<h1>Employee Management</h1>
+<form action="create_employee.php" method="post">
+<label for="Employee_Name">Employee Name:</label>
+<input type="text" name="Employee_Name" required><br>
+<label for="Employee_Salary">Employee Salary:</label>
+<input type="number" name="Employee_Salary" step="0.01" required><br>
+<label for="Employee_Manager">Employee Manager (ID):</label>
+<input type="number" name="Employee_Manager"><br>
+<input type="submit" value="Create Employee">
+</form>
+<br>
+<form action="read_employee.php" method="get">
+<input type="submit" value="View Records">
+</form>
+<br>
+<form action="delete_employee.php" method="post">
+<input type="submit" value="Delete Record">
+</form>
+<br>
+<form action="update_employee.php" method="post">
+<input type="submit" value="Update Record">
+</form>
+</body>
+</html>
+
+CREATE_EMPLOYEE
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "test";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+$Employee_Name = $_POST['Employee_Name'];
+$Employee_Salary = $_POST['Employee_Salary'];
+$Employee_Manager = $_POST['Employee_Manager'];
+$sql = "INSERT INTO Employee (Employee_Name, Employee_Salary, Employee_Manager) VALUES
+('$Employee_Name', $Employee_Salary, $Employee_Manager)";
+if ($conn->query($sql) === TRUE) {
+echo "Employee created successfully";
+} else {
+echo "Error: " . $sql . "<br>" . $conn->error;
+}
+echo '<br><a href="employee_form.php">Back to Employee Form</a>';
+$conn->close();
+?>
+
+READ_EMPLOYEE
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "test";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+$sql = "SELECT * FROM Employee";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+echo "<table><tr><th>ID</th><th>Name</th><th>Salary</th><th>Manager</th></tr>";
+while($row = $result->fetch_assoc()) {
+echo
+"<tr><td>".$row["Employee_id"]."</td><td>".$row["Employee_Name"]."</td><td>".$row["Employee_S
+alary"]."</td><td>".$row["Employee_Manager"]."</td></tr>";
+}
+echo "</table>";
+} else {
+echo "0 results";
+}
+echo '<br><a href="employee_form.php">Back to Employee Form</a>';
+$conn->close();
+?>
+
+UPDATE_EMPLOYEE
+<!DOCTYPE html>
+<html>
+<head>
+<title>Update Employee</title>
+</head>
+<body>
+<h1>Update Employee</h1>
+<form action="update_employee.php" method="post">
+<label for="Employee_ID">Enter Employee ID to Update:</label>
+<input type="number" name="Employee_ID" required>
+<br>
+<label for="Employee_Name">New Employee Name:</label>
+<input type="text" name="Employee_Name" required>
+<br>
+<label for="Employee_Salary">New Employee Salary:</label>
+<input type="number" name="Employee_Salary" step="0.01" required>
+<br>
+<label for="Employee_Manager">New Employee Manager (ID):</label>
+<input type="number" name="Employee_Manager">
+<br>
+<input type="submit" value="Update Employee">
+</form>
+
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "test";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+$employee_id = $_POST['Employee_ID'];
+$Employee_Name = $_POST['Employee_Name'];
+$Employee_Salary = $_POST['Employee_Salary'];
+$Employee_Manager = $_POST['Employee_Manager'];
+$sql = "UPDATE Employee SET Employee_Name='$Employee_Name',
+Employee_Salary=$Employee_Salary, Employee_Manager=$Employee_Manager WHERE
+Employee_id=$employee_id";
+if ($conn->query($sql) === TRUE) {
+echo "Employee with ID $employee_id has been updated successfully.";
+} else {
+echo "Error: " . $sql . "<br>" . $conn->error;
+}
+echo '<br><a href="employee_form.php">Back to Employee Form</a>';
+$conn->close();
+}
+?>
+</body>
+</html>
+
+DELETE_EMPLOYEE
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete Employee</title>
+</head>
+<body>
+<h1>Delete Employee</h1>
+<form action="delete_employee.php" method="post">
+<label for="Employee_ID">Enter Employee ID to Delete:</label>
+<input type="number" name="Employee_ID" required>
+<input type="submit" value="Delete Employee">
+</form>
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "test";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+$employee_id = $_POST['Employee_ID'];
+$sql = "DELETE FROM Employee WHERE Employee_id=$employee_id";
+if ($conn->query($sql) === TRUE) {
+echo "Employee with ID $employee_id has been deleted successfully.";
+} else {
+echo "Error: " . $sql . "<br>" . $conn->error;
+}
+echo '<br><a href="employee_form.php">Back to Employee Form</a>';
+$conn->close();
+}
+?>
+</body>
+</html>
