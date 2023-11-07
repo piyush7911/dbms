@@ -1,0 +1,177 @@
+1) aggregation "Movies"
+
+db.createCollection("Movies_Data")
+
+db.Movies_Data.insertMany([
+  {
+    Movie_ID: 1,
+    Movie_Name: "Movie1",
+    Director: "Director1",
+    Genre: "Genre1",
+    BoxOfficeCollection: 1000000
+  },
+  {
+    Movie_ID: 2,
+    Movie_Name: "Movie2",
+    Director: "Director1",
+    Genre: "Genre2",
+    BoxOfficeCollection: 2000000
+  },
+  {
+    Movie_ID: 3,
+    Movie_Name: "Movie3",
+    Director: "Director2",
+    Genre: "Genre1",
+    BoxOfficeCollection: 3000000
+  },
+  {
+    Movie_ID: 4,
+    Movie_Name: "Movie4",
+    Director: "Director3",
+    Genre: "Genre4",
+    BoxOfficeCollection: 4000000
+  }
+]);
+
+1)
+db.Movies_Data.aggregate(
+  {
+    $group: {
+      _id: "$Director",
+      "NoofMOvies": { $sum: 1 }
+    }
+  }
+ )
+ 
+2)
+db.Movies_Data.aggregate(
+  {
+    $group: {
+      _id: "$Genre",
+      "Highest BoC": { $max: "$BoxOfficeCollection" }
+    }
+  }
+ )
+
+3)
+db.Movies_Data.aggregate(
+  {
+    $group: {
+      _id: "$Genre",
+      "Highest BoC": { $max: "$BoxOfficeCollection" }
+    }
+  },
+  {
+    $sort:{"Highest BoC":1}
+  }
+ )
+
+4)
+db.Movies_Data.createIndex({ Movie_ID: 1 });
+5)
+db.Movies_Data.createIndex({ Movie_Name: 1}, {Director: 1 });
+6)and7)
+db.Movies_Data.dropIndex({ Movie_Name: 1}, {Director: 1 });
+
+2) aggregation "student"
+
+db.createCollection("Student_Data")
+
+db.Student_Data.insertMany([
+  {
+    Student_ID: 1,
+    Student_Name: "Alice",
+    Department: "Math",
+    Marks: 95
+  },
+  {
+    Student_ID: 2,
+    Student_Name: "Bob",
+    Department: "Physics",
+    Marks: 88
+  },
+  {
+    Student_ID: 3,
+    Student_Name: "Charlie",
+    Department: "Math",
+    Marks: 90
+  },
+  {
+    Student_ID: 4,
+    Student_Name: "David",
+    Department: "Physics",
+    Marks: 92
+  }
+])
+
+1)
+db.Student_Data.aggregate(
+  {
+    $group: {
+      _id: "$Department",
+      "Avg Marks": { $avg: "$Marks" }
+    }
+  }
+ )
+ 
+ 2)
+ db.Student_Data.aggregate(
+  {
+    $group: {
+      _id: "$Department",
+      "No of students": { $sum: 1 }
+    }
+  }
+ )
+ 
+ 3)
+ db.Student_Data.aggregate(
+  {
+    $group: {
+      _id: "$Department",
+      "Highest Marks": { $max: "$Marks" }
+    }
+  },
+  {
+    $sort:{"Highest Marks": -1}
+  }
+ )
+ 
+ 4)
+ db.Student_Data.createIndex({ Student_ID: 1 });
+ 5)
+ db.Student_Data.createIndex({ Student_Name: 1 },{Department:1});
+ 6)and7)
+ db.Student_Data.dropIndex({ Student_Name: 1},{Department: 1 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
