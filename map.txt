@@ -1,0 +1,219 @@
+1)map "student"
+
+db.createCollection("Student")
+
+db.Student.insertMany([
+  {
+    roll_no: "A1",
+    name: "Student1",
+    class: "TE",
+    dept: "Computer Science",
+    aggregate_marks: 85
+  },
+  {
+    roll_no: "A2",
+    name: "Student2",
+    class: "TE",
+    dept: "Mechanical Engineering",
+    aggregate_marks: 92
+  },
+  {
+    roll_no: "A3",
+    name: "Student3",
+    class: "SE",
+    dept: "Computer Science",
+    aggregate_marks: 78
+  },
+  // Insert more student records...
+])
+
+1)
+var mapFunction = function() {
+  if (this.class === "TE") {
+    emit(this.dept, this.aggregate_marks);
+  }
+};
+
+var reduceFunction = function(key, values) {
+  return Array.sum(values);
+};
+
+db.Student.mapReduce(mapFunction, reduceFunction, {
+  out: "DepartmentTotalMarks",
+  query: { class: "TE" }
+});
+
+db.DepartmentTotalMarks.find();
+
+2)
+var mapFunction = function() {
+  if (this.class === "SE") {
+    emit(this.dept, this.aggregate_marks);
+  }
+};
+
+var reduceFunction = function(key, values) {
+  return Math.max.apply(null, values);
+};
+
+db.Student.mapReduce(mapFunction, reduceFunction, {
+  out: "DepartmentHighestMarks",
+  query: { class: "SE" }
+});
+
+db.DepartmentHighestMarks.find();
+
+3)
+var mapFunction = function() {
+  if (this.class === "BE") {
+    emit(this.dept, { totalMarks: this.aggregate_marks, count: 1 });
+  }
+};
+
+var reduceFunction = function(key, values) {
+  var reducedValue = { totalMarks: 0, count: 0 };
+
+  for (var i = 0; i < values.length; i++) {
+    reducedValue.totalMarks += values[i].totalMarks;
+    reducedValue.count += values[i].count;
+  }
+
+  return reducedValue;
+};
+
+var finalizeFunction = function(key, reducedValue) {
+  return reducedValue.totalMarks / reducedValue.count;
+};
+
+db.Student.mapReduce(mapFunction, reduceFunction, {
+  out: "DepartmentAverageMarks",
+  query: { class: "BE" },
+  finalize: finalizeFunction
+});
+
+db.DepartmentAverageMarks.find();
+
+//---------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+2) map "Book"
+
+db.createCollection("Book")
+
+db.Book.insertMany([
+  {
+    Title: "Book1",
+    Author_name: "Author1",
+    Borrowed_status: "Available"
+  },
+  {
+    Title: "Book2",
+    Author_name: "Author2",
+    Borrowed_status: "Borrowed"
+  },
+  {
+    Title: "Book3",
+    Author_name: "Author1",
+    Borrowed_status: "Available"
+  },
+  // Insert more book records...
+]);
+
+1)
+
+var mapFunction = function() {
+  emit(this.Author_name, { books: [{ title: this.Title, status: this.Borrowed_status }] });
+};
+
+var reduceFunction = function(key, values) {
+  var reducedValue = { books: [] };
+
+  for (var i = 0; i < values.length; i++) {
+    reducedValue.books = reducedValue.books.concat(values[i].books);
+  }
+
+  return reducedValue;
+};
+
+db.Book.mapReduce(mapFunction, reduceFunction, {
+  out: "AuthorWiseBooks"
+});
+
+db.AuthorWiseBooks.find();
+
+2)
+var mapFunction = function() {
+  if (this.Borrowed_status === "True") {
+    emit(this.Author_name, { books: [{ title: this.Title, status: this.Borrowed_status }] });
+  }
+};
+
+var reduceFunction = function(key, values) {
+  var reducedValue = { books: [] };
+
+  for (var i = 0; i < values.length; i++) {
+    reducedValue.books = reducedValue.books.concat(values[i].books);
+  }
+
+  return reducedValue;
+};
+
+db.Book.mapReduce(mapFunction, reduceFunction, {
+  out: "AuthorWiseBorrowedBooks"
+});
+
+db.AuthorWiseBorrowedBooks.find();
+
+3)
+db.Book.insertMany([
+  {
+    Title: "Book1",
+    Author_name: "Author1",
+    Price: 400
+  },
+  {
+    Title: "Book2",
+    Author_name: "Author2",
+    Price: 250
+  },
+  {
+    Title: "Book3",
+    Author_name: "Author1",
+    Price: 350
+  },
+  // Insert more book records...
+]);
+
+var mapFunction = function() {
+  if (this.Price > 300) {
+    emit(this.Author_name, { books: [{ title: this.Title, price: this.Price }] });
+  }
+};
+
+var reduceFunction = function(key, values) {
+  var reducedValue = { books: [] };
+
+  for (var i = 0; i < values.length; i++) {
+    reducedValue.books = reducedValue.books.concat(values[i].books);
+  }
+
+  return reducedValue;
+};
+
+db.Book.mapReduce(mapFunction, reduceFunction, {
+  out: "AuthorWiseHighPricedBooks"
+});
+
+db.AuthorWiseHighPricedBooks.find();
+
+
+
+
+
+
+
+
+
+
+
+

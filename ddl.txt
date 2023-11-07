@@ -1,0 +1,130 @@
+1) ddl customer  create table in 1)
+
+
+1)
+-- Create the Customer table
+CREATE TABLE Customer (
+    CustID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Cust_Address VARCHAR(100),
+    Phone_no VARCHAR(15),
+    Email_ID VARCHAR(255),
+    Age INT
+);
+
+-- Create the Branch table
+CREATE TABLE Branch (
+    Branch_ID INT PRIMARY KEY,
+    Branch_Name VARCHAR(50),
+    Address VARCHAR(100)
+);
+
+-- Create the Account table with foreign keys for referential integrity
+CREATE TABLE Account (
+    Account_no INT PRIMARY KEY,
+    Branch_ID INT,
+    CustID INT,
+    date_open DATE,
+    Account_type VARCHAR(20),
+    Balance DECIMAL(10, 2),
+    FOREIGN KEY (Branch_ID) REFERENCES Branch(Branch_ID),
+    FOREIGN KEY (CustID) REFERENCES Customer(CustID)
+);
+
+2)
+
+3)
+CREATE INDEX Account_PK_Index
+ON Account (Account_no);
+
+4)
+CREATE VIEW Customer_Info AS
+SELECT *
+FROM Customer
+WHERE Age < 45;
+
+5)
+CREATE SEQUENCE Branch_Sequence
+START WITH 1
+INCREMENT BY 1;
+
+6)
+CREATE SYNONYM Branch_info FOR Branch;
+
+//----------------------------------------------------------------
+//----------------------------------------------------------------------
+
+2) ddl customer
+
+1)
+-- Create the Customer table
+CREATE TABLE Customer (
+    CustID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Cust_Address VARCHAR(100),
+    Phone_no VARCHAR(15),
+    Email_ID VARCHAR(255),
+    Age INT
+);
+
+-- Create the Branch table
+CREATE TABLE Branch (
+    Branch_ID INT PRIMARY KEY,
+    Branch_Name VARCHAR(50),
+    Address VARCHAR(100)
+);
+
+-- Create the Account table with foreign keys for referential integrity
+CREATE TABLE Account (
+    Account_no INT PRIMARY KEY,
+    Branch_ID INT,
+    CustID INT,
+    open_date DATE,
+    Account_type VARCHAR(20),
+    Balance DECIMAL(10, 2),
+    FOREIGN KEY (Branch_ID) REFERENCES Branch(Branch_ID),
+    FOREIGN KEY (CustID) REFERENCES Customer(CustID)
+);
+
+
+2)
+
+3)
+CREATE VIEW Saving_Account AS
+SELECT c.*
+FROM Customer c
+JOIN Account a ON c.CustID = a.CustID
+WHERE a.open_date = '2018-08-16' AND a.Account_type = 'Savings';
+
+4)
+UPDATE Customer
+SET Cust_Address = 'Pune'
+WHERE CustID = 103;
+
+
+5)
+CREATE VIEW Loan_Account AS
+SELECT c.*
+FROM Customer c
+JOIN Account a ON c.CustID = a.CustID
+WHERE a.open_date = '2018-02-16' AND a.Account_type = 'Loan';
+
+6)
+CREATE INDEX Customer_PK_Index
+ON Customer (CustID);
+
+7)
+CREATE SEQUENCE Customer_Sequence
+START WITH 1
+INCREMENT BY 1;
+
+8)
+CREATE SYNONYM Cust_info FOR Customer;
+
+
+
+
+
+
+
+

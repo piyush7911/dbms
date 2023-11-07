@@ -1,0 +1,186 @@
+1) subquery  employee
+
+-- Create the Employee table
+CREATE TABLE Employee (
+    Employee_id INT PRIMARY KEY,
+    First_name VARCHAR(50),
+    Last_name VARCHAR(50),
+    Hire_date DATE,
+    Salary DECIMAL(10, 2),
+    Job_title VARCHAR(50),
+    Manager_id INT,
+    department_id INT,
+    FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id),
+    FOREIGN KEY (department_id) REFERENCES Departments(Department_id)
+);
+
+-- Create the Departments table
+CREATE TABLE Departments (
+    Department_id INT PRIMARY KEY,
+    Department_name VARCHAR(50),
+    Manager_id INT,
+    Location_id INT,
+    FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id),
+    FOREIGN KEY (Location_id) REFERENCES Locations(Location_id)
+);
+
+-- Create the Locations table
+CREATE TABLE Locations (
+    Location_id INT PRIMARY KEY,
+    Street_address VARCHAR(100),
+    Postal_code VARCHAR(10),
+    City VARCHAR(50),
+    State VARCHAR(50),
+    Country_id INT
+);
+
+-- Create the Manager table
+CREATE TABLE Manager (
+    Manager_id INT PRIMARY KEY,
+    Manager_name VARCHAR(50)
+);
+
+
+1)
+SELECT e.First_name, e.Last_name, e.Salary
+FROM Employee e
+JOIN Departments d ON e.department_id = d.Department_id
+WHERE e.Salary > (
+    SELECT AVG(Salary)
+    FROM Employee
+    WHERE department_id IN (
+        SELECT Department_id
+        FROM Departments
+        WHERE Department_name LIKE 'IT%'
+    )
+);
+
+2)
+SELECT e.First_name, e.Last_name, e.Salary
+FROM Employee e
+WHERE e.Salary = (
+    SELECT MIN(Salary)
+    FROM Employee
+);
+
+3)
+SELECT e.Employee_id, e.First_name, e.Last_name, e.Salary
+FROM Employee e
+WHERE e.Salary > (
+    SELECT AVG(Salary)
+    FROM Employee
+    WHERE department_id = e.department_id
+);
+
+4)
+SELECT d.Department_name, m.Manager_name, l.City
+FROM Departments d
+JOIN Manager m ON d.Manager_id = m.Manager_id
+JOIN Locations l ON d.Location_id = l.Location_id;
+
+
+5)
+SELECT e.First_name, e.Last_name, e.Hire_date, e.Salary
+FROM Employee e
+WHERE e.Employee_id IN (
+    SELECT d.Manager_id
+    FROM Departments d
+    WHERE DATEDIFF(CURDATE(), e.Hire_date) > 5475
+);
+
+
+//--------------------------------------
+//--------------------------------------
+
+2) sub emp singh
+
+-- Create the Employee table
+CREATE TABLE Employee (
+    Employee_id INT PRIMARY KEY,
+    First_name VARCHAR(50),
+    Last_name VARCHAR(50),
+    Hire_date DATE,
+    Salary DECIMAL(10, 2),
+    Job_title VARCHAR(50),
+    Manager_id INT,
+    department_id INT,
+    FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id),
+    FOREIGN KEY (department_id) REFERENCES Departments(Department_id)
+);
+
+-- Create the Departments table
+CREATE TABLE Departments (
+    Department_id INT PRIMARY KEY,
+    Department_name VARCHAR(50),
+    Manager_id INT,
+    Location_id INT,
+    FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id),
+    FOREIGN KEY (Location_id) REFERENCES Locations(Location_id)
+);
+
+-- Create the Locations table
+CREATE TABLE Locations (
+    Location_id INT PRIMARY KEY,
+    Street_address VARCHAR(100),
+    Postal_code VARCHAR(10),
+    City VARCHAR(50),
+    State VARCHAR(50),
+    Country_id INT
+);
+
+-- Create the Manager table
+CREATE TABLE Manager (
+    Manager_id INT PRIMARY KEY,
+    Manager_name VARCHAR(50)
+);
+
+1)
+SELECT e.First_name, e.Last_name, e.Salary
+FROM Employee e
+WHERE e.Salary > (
+    SELECT Salary
+    FROM Employee
+    WHERE Last_name = 'Singh'
+);
+
+2)
+SELECT e.First_name, e.Last_name
+FROM Employee e
+WHERE e.Manager_id IS NOT NULL
+AND e.department_id IN (
+    SELECT d.Department_id
+    FROM Departments d
+    JOIN Locations l ON d.Location_id = l.Location_id
+    WHERE l.Country_id = 'United States'
+);
+
+3)
+SELECT e.First_name, e.Last_name, e.Salary
+FROM Employee e
+WHERE e.Salary > (
+    SELECT AVG(Salary)
+    FROM Employee
+);
+
+4)
+SELECT e.Employee_id, e.Last_name, e.Manager_id, m.Last_name AS Manager_Last_name
+FROM Employee e
+LEFT JOIN Employee m ON e.Manager_id = m.Employee_id;
+
+5)
+SELECT First_name, Last_name, Hire_date
+FROM Employee
+WHERE Hire_date > (
+    SELECT Hire_date
+    FROM Employee
+    WHERE Last_name = 'Jones'
+);
+
+
+
+
+
+
+
+
+
