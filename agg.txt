@@ -73,6 +73,9 @@ db.Movies_Data.createIndex({ Movie_Name: 1}, {Director: 1 });
 6)and7)
 db.Movies_Data.dropIndex({ Movie_Name: 1}, {Director: 1 });
 
+//--------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------
+
 2) aggregation "student"
 
 db.createCollection("Student_Data")
