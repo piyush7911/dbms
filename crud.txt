@@ -1,0 +1,99 @@
+1)crud Social media
+
+db.createCollection("Social_Media")
+
+db.Social_Media.insertMany([
+  {
+    User_Id: 1,
+    User_Name: "User1",
+    No_of_Posts: 105,
+    No_of_Friends: 50,
+    Friends_List: ["Friend1", "Friend2", "Friend3"],
+    Interests: ["Interest1", "Interest2", "Interest3"]
+  },
+  {
+    User_Id: 2,
+    User_Name: "User2",
+    No_of_Posts: 90,
+    No_of_Friends: 100,
+    Friends_List: ["Friend4", "Friend2", "Friend5"],
+    Interests: ["Interest4", "Interest5", "Interest3"]
+  }
+  // Add 19 more documents with similar structure
+])
+
+1)
+db.Social_Media.find({}, { _id: 0, User_Id: 1, User_Name: 1, No_of_Posts: 1, No_of_Friends: 1 }).pretty();
+
+2)
+db.Social_Media.find({No_of_Posts:{$gt:100}})
+
+3)
+db.Social_Media.find({}, { _id: 0, User_Name: 1,Friends_List: 1 })
+
+4)
+db.Social_Media.find({No_of_Friends:{$gt:5}}, { _id: 0, User_Name: 1,Friends_List: 1 })
+
+5)
+db.Social_Media.find().sort({No_of_Posts:-1})
+
+//-------------------------------------------------------------------------
+//--------------------------------------------------------------
+
+
+2)crud "student"
+
+db.createCollection("Student")
+
+db.Student.insertMany([
+  {
+    Roll_No: 1,
+    Name: "Student1",
+    Class: "ClassA",
+    Marks: 85,
+    Address: "Address1",
+    Enrolled_Courses: ["DBMS", "TOC", "Math"]
+  },
+  {
+    Roll_No: 2,
+    Name: "Student2",
+    Class: "ClassB",
+    Marks: 90,
+    Address: "Address2",
+    Enrolled_Courses: ["TOC", "Physics"]
+  },
+  // Add 8 more documents with similar 
+]);
+
+1)
+db.Student.find({ Enrolled_Courses: { $all: ["DBMS", "TOC"] }, }, { _id: 0, Name: 1 });
+
+2)
+db.Student.find(
+    { Marks: { $gt: 50 },{ Class: "TE" },
+    { _id: 0, Roll_No: 1, Class: 1 });
+
+3)
+db.Student.updateOne({ Roll_No: "A10" }, {
+  $set: {
+    Name: "UpdatedName",
+    Class: "UpdatedClass",
+    Marks: 100,
+    Address: "UpdatedAddress",
+    Enrolled_Courses: ["UpdatedCourse1", "UpdatedCourse2"]
+  }
+});
+
+4)
+db.Student.find({}, { Name: 1, Marks: 1, _id: 0 }).sort({ Marks: -1 }).skip(2).limit(2);
+
+5)
+db.Student.deleteMany({ Marks: { $lt: 20 } });
+
+6)
+db.Student.deleteOne({});
+
+
+
+
+
