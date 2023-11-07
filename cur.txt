@@ -1,0 +1,152 @@
+1) cursor product
+
+ Create the Products table
+CREATE TABLE Products (
+    Product_id NUMBER PRIMARY KEY,
+    Product_Name VARCHAR2(50),
+    Product_Type VARCHAR2(50),
+    Price NUMBER
+);
+
+-- Insert sample data into the Products table
+INSERT INTO Products (Product_id, Product_Name, Product_Type, Price)
+VALUES (1, 'Laptop', 'Electronics', 1000.00);
+
+INSERT INTO Products (Product_id, Product_Name, Product_Type, Price)
+VALUES (2, 'Smartphone', 'Electronics', 500.00);
+
+INSERT INTO Products (Product_id, Product_Name, Product_Type, Price)
+VALUES (3, 'T-shirt', 'Apparel', 20.00);
+
+INSERT INTO Products (Product_id, Product_Name, Product_Type, Price)
+VALUES (4, 'Book', 'Books', 15.00);
+
+-- Add more INSERT statements as needed to insert additional sample data.
+
+1)
+DECLARE
+    v_min_price NUMBER := &min_price; -- User input for minimum price
+    v_max_price NUMBER := &max_price; -- User input for maximum price
+    v_product_type VARCHAR2(50) := 'Apparel'; -- Type to filter
+
+    CURSOR PriceRangeCursor IS
+        SELECT Product_id, Product_Name, Price
+        FROM Products
+        WHERE Price BETWEEN v_min_price AND v_max_price
+        AND Product_Type = v_product_type;
+
+BEGIN
+    FOR product_rec IN PriceRangeCursor LOOP
+        DBMS_OUTPUT.PUT_LINE('Product ID: ' || product_rec.Product_id || ', Product Name: ' || product_rec.Product_Name || ', Price: ' || product_rec.Price);
+    END LOOP;
+END;
+
+
+2)
+DECLARE
+    CURSOR HighPriceCursor IS
+        SELECT Product_id, Product_Name, Price
+        FROM Products
+        WHERE Price > 5000;
+
+BEGIN
+    FOR product_rec IN HighPriceCursor LOOP
+        DBMS_OUTPUT.PUT_LINE('Product ID: ' || product_rec.Product_id || ', Product Name: ' || product_rec.Product_Name || ', Price: ' || product_rec.Price);
+    END LOOP;
+END;
+/
+
+3)
+DECLARE
+    v_records_affected NUMBER;
+
+BEGIN
+    -- Update the Prices of Products by incrementing by 1000
+    UPDATE Products
+    SET Price = Price + 1000;
+
+    -- Get the number of records affected by the update operation
+    v_records_affected := SQL%ROWCOUNT;
+
+    DBMS_OUTPUT.PUT_LINE('Number of records updated: ' || v_records_affected);
+END;
+
+
+//----------------------------------------------------------------------
+//-------------------------------------------------------------------
+
+2) empoloyee
+
+-- Create the Employee table
+CREATE TABLE Employee (
+    Emp_id NUMBER PRIMARY KEY,
+    Emp_Name VARCHAR2(50),
+    Salary NUMBER
+);
+
+-- Insert sample data into the Employee table
+INSERT INTO Employee (Emp_id, Emp_Name, Salary)
+VALUES (1, 'John Doe', 50000);
+
+INSERT INTO Employee (Emp_id, Emp_Name, Salary)
+VALUES (2, 'Jane Smith', 60000);
+
+INSERT INTO Employee (Emp_id, Emp_Name, Salary)
+VALUES (3, 'Alice Johnson', 70000);
+
+-- You can continue to insert more sample data as needed
+
+1)
+DECLARE
+    CURSOR HighSalaryCursor IS
+        SELECT Emp_id, Emp_Name, Salary
+        FROM Employee
+        WHERE Salary > 50000;
+
+BEGIN
+    FOR emp_rec IN HighSalaryCursor LOOP
+        DBMS_OUTPUT.PUT_LINE('Employee ID: ' || emp_rec.Emp_id || ', Employee Name: ' || emp_rec.Emp_Name || ', Salary: ' || emp_rec.Salary);
+    END LOOP;
+END;
+/
+
+2)
+DECLARE
+    v_total_tuples NUMBER;
+
+BEGIN
+    SELECT COUNT(*) INTO v_total_tuples
+    FROM Employee;
+
+    DBMS_OUTPUT.PUT_LINE('Total number of tuples in the Employee table: ' || v_total_tuples);
+END;
+/
+
+3)
+DECLARE
+    v_emp_id NUMBER := &employee_id; -- User input for employee ID
+
+    CURSOR SalaryCursor (p_emp_id NUMBER) IS
+        SELECT Salary
+        FROM Employee
+        WHERE Emp_id = p_emp_id;
+
+    v_salary NUMBER;
+BEGIN
+    OPEN SalaryCursor(v_emp_id);
+    FETCH SalaryCursor INTO v_salary;
+    CLOSE SalaryCursor;
+
+    IF v_salary IS NOT NULL THEN
+        DBMS_OUTPUT.PUT_LINE('Salary of Employee ID ' || v_emp_id || ': ' || v_salary);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Employee ID ' || v_emp_id || ' not found.');
+    END IF;
+END;
+
+
+
+ 
+
+
+

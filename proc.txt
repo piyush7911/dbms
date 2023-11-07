@@ -1,0 +1,164 @@
+1) procedure  account
+
+-- Create the Account table
+CREATE TABLE Account (
+    Account_No NUMBER PRIMARY KEY,
+    Cust_Name VARCHAR2(50),
+    Balance NUMBER,
+    NoOfYears NUMBER
+);
+
+-- Create the Earned_Interest table
+CREATE TABLE Earned_Interest (
+    Account_No NUMBER PRIMARY KEY,
+    Interest_Amt NUMBER,
+    FOREIGN KEY (Account_No) REFERENCES Account(Account_No)
+);
+
+-- Insert sample data into the Account table
+INSERT INTO Account (Account_No, Cust_Name, Balance, NoOfYears)
+VALUES (1, 'John Doe', 10000, 3);
+
+INSERT INTO Account (Account_No, Cust_Name, Balance, NoOfYears)
+VALUES (2, 'Jane Smith', 15000, 2);
+
+-- Insert sample data into the Earned_Interest table
+INSERT INTO Earned_Interest (Account_No, Interest_Amt)
+VALUES (1, 500);
+
+INSERT INTO Earned_Interest (Account_No, Interest_Amt)
+VALUES (2, 600);
+
+1)
+
+CREATE OR REPLACE PROCEDURE CalculateAndStoreInterest(
+    p_Account_No NUMBER,
+    p_Interest_Rate NUMBER
+) IS
+    v_Principal NUMBER;
+    v_Interest_Amt NUMBER;
+BEGIN
+    -- Get the principal amount from the Account table based on Account_No
+    SELECT Balance INTO v_Principal
+    FROM Account
+    WHERE Account_No = p_Account_No;
+
+    -- Calculate the interest amount
+    v_Interest_Amt := (v_Principal * p_Interest_Rate) / 100;
+
+    -- Insert the interest amount into the Earned_Interest table
+    INSERT INTO Earned_Interest (Account_No, Interest_Amt)
+    VALUES (p_Account_No, v_Interest_Amt);
+
+    COMMIT;
+
+    -- Display all details from the Earned_Interest table
+    FOR interest_record IN (SELECT * FROM Earned_Interest) LOOP
+        DBMS_OUTPUT.PUT_LINE('Account_No: ' || interest_record.Account_No || ', Interest_Amt: ' || interest_record.Interest_Amt);
+    END LOOP;
+END;
+
+DECLARE
+    v_Account_No NUMBER := 1; -- Replace with the desired Account_No
+    v_Interest_Rate NUMBER := 5; -- Replace with the desired Interest Rate
+BEGIN
+    CalculateAndStoreInterest(v_Account_No, v_Interest_Rate);
+END;
+
+
+2)
+-- Create the function to return high balance accounts
+CREATE OR REPLACE FUNCTION GetHighBalanceAccounts RETURN SYS_REFCURSOR IS
+    v_cursor SYS_REFCURSOR;
+BEGIN
+    OPEN v_cursor FOR
+    SELECT *
+    FROM Account
+    WHERE Balance > 50000;
+
+    RETURN v_cursor;
+END;
+
+
+-- Use the function in a SQL query to retrieve high balance accounts
+SELECT * FROM TABLE(GetHighBalanceAccounts);
+
+
+//--------------------------------------------------------
+//---------------------------------------------------------
+
+2)employee
+
+
+-- Create the Employee table
+CREATE TABLE Employee (
+    emp_id NUMBER PRIMARY KEY,
+    dept_id NUMBER,
+    emp_name VARCHAR2(50),
+    DoJ DATE,
+    salary NUMBER,
+    commission NUMBER,
+    job_title VARCHAR2(50)
+);
+
+-- Insert sample data into the Employee table
+INSERT INTO Employee (emp_id, dept_id, emp_name, DoJ, salary, commission, job_title)
+VALUES (1, 101, 'John Doe', TO_DATE('2023-01-15', 'yyyy-mm-dd'), 50000, 2500, 'Manager');
+
+INSERT INTO Employee (emp_id, dept_id, emp_name, DoJ, salary, commission, job_title)
+VALUES (2, 102, 'Jane Smith', TO_DATE('2023-02-20', 'yyyy-mm-dd'), 60000, 3000, 'Developer');
+
+INSERT INTO Employee (emp_id, dept_id, emp_name, DoJ, salary, commission, job_title)
+VALUES (3, 103, 'Alice Johnson', TO_DATE('2023-03-10', 'yyyy-mm-dd'), 70000, 3500, 'Designer');
+
+
+1)
+CREATE OR REPLACE PROCEDURE RecordEmployeeCommission AS
+BEGIN
+    -- Update commission based on conditions
+    UPDATE Employee
+    SET commission =
+        CASE
+            WHEN salary > 10000 THEN salary * 0.004
+            WHEN salary <= 10000 AND NoOfYears > 10 THEN salary * 0.0035
+            WHEN salary < 3000 THEN salary * 0.0025
+            ELSE salary * 0.0015
+        END;
+    
+    COMMIT;
+END;
+
+
+-- Calling the procedure to record employee commissions
+BEGIN
+    RecordEmployeeCommission;
+END;
+
+
+2)
+CREATE OR REPLACE FUNCTION GetDepartmentManager(p_dept_id NUMBER) RETURN VARCHAR2 IS
+    v_manager_name VARCHAR2(50);
+BEGIN
+    -- Retrieve the name of the manager for the specified department
+    SELECT emp_name INTO v_manager_name
+    FROM Employee
+    WHERE dept_id = p_dept_id AND job_title = 'Manager';
+
+    RETURN v_manager_name;
+END;
+
+-- Calling the function to get the department manager
+DECLARE
+    v_manager_name VARCHAR2(50);
+BEGIN
+    v_manager_name := GetDepartmentManager(101); -- Replace 101 with the desired department ID
+    DBMS_OUTPUT.PUT_LINE('Department Manager: ' || v_manager_name);
+END;
+
+
+
+
+
+
+
+

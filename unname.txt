@@ -1,0 +1,92 @@
+1) unnamed empoyee
+
+-- Create the Employee table
+CREATE TABLE Employee (
+    emp_id NUMBER PRIMARY KEY,
+    dept_id NUMBER,
+    emp_name VARCHAR2(50),
+    DoJ DATE,
+    salary NUMBER,
+    commission NUMBER,
+    job_title VARCHAR2(50)
+);
+
+-- Create the Salary_Increment table
+CREATE TABLE Salary_Increment (
+    emp_id NUMBER PRIMARY KEY,
+    new_salary NUMBER
+);
+
+-- Insert sample data into the Employee table
+INSERT INTO Employee (emp_id, dept_id, emp_name, DoJ, salary, commission, job_title)
+VALUES (1, 101, 'John Doe', TO_DATE('2023-01-15', 'yyyy-mm-dd'), 50000, NULL, 'Manager');
+
+INSERT INTO Employee (emp_id, dept_id, emp_name, DoJ, salary, commission, job_title)
+VALUES (2, 102, 'Jane Smith', TO_DATE('2023-02-20', 'yyyy-mm-dd'), 60000, NULL, 'Developer');
+
+-- Insert sample data into the Salary_Increment table
+INSERT INTO Salary_Increment (emp_id, new_salary)
+VALUES (1, 55000);
+
+INSERT INTO Salary_Increment (emp_id, new_salary)
+VALUES (2, 65000);
+
+-- Add more INSERT statements as needed to insert additional sample data.
+
+-- Declare user-defined exceptions
+DECLARE
+    emp_id_to_increment NUMBER;
+    years_of_experience NUMBER;
+    incremented_salary NUMBER;
+    
+    -- User-defined exceptions
+    InvalidEmpId EXCEPTION;
+    InsufficientExperience EXCEPTION;
+    ExperienceOutOfRange EXCEPTION;
+    
+    PRAGMA EXCEPTION_INIT(InvalidEmpId, -20001);  -- Associate error codes
+    PRAGMA EXCEPTION_INIT(InsufficientExperience, -20002);
+    PRAGMA EXCEPTION_INIT(ExperienceOutOfRange, -20003);
+BEGIN
+    -- Accept emp_id from the user
+    emp_id_to_increment := &emp_id;  -- You can also use an explicit prompt for user input
+
+    -- Get years of experience based on DoJ
+    SELECT EXTRACT(YEAR FROM (SYSDATE - DoJ)) INTO years_of_experience
+    FROM Employee
+    WHERE emp_id = emp_id_to_increment;
+
+    -- Check if the employee exists and has valid experience
+    IF years_of_experience IS NULL THEN
+        RAISE InvalidEmpId;
+    ELSIF years_of_experience > 10 THEN
+        incremented_salary := salary * 1.20;  -- Increase salary by 20%
+    ELSIF years_of_experience > 5 THEN
+        incremented_salary := salary * 1.10;  -- Increase salary by 10%
+    ELSE
+        incremented_salary := salary * 1.05;  -- Increase salary by 5%
+    END IF;
+
+    -- Insert the incremented salary into the Salary_Increment table
+    INSERT INTO Salary_Increment (emp_id, new_salary)
+    VALUES (emp_id_to_increment, incremented_salary);
+    
+    COMMIT;
+    
+    -- Display the incremented salary
+    DBMS_OUTPUT.PUT_LINE('Salary for Employee ' || emp_id_to_increment || ' is incremented to ' || incremented_salary);
+
+EXCEPTION
+    WHEN InvalidEmpId THEN
+        DBMS_OUTPUT.PUT_LINE('Invalid Employee ID or Employee not found.');
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Employee not found.');
+    WHEN ExperienceOutOfRange THEN
+        DBMS_OUTPUT.PUT_LINE('Years of experience out of range.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+
+
+
+
